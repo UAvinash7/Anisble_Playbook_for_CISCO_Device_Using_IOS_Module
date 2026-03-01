@@ -1,6 +1,6 @@
 # Anisble_Playbook_for_CISCO_Device_Using_IOS_Module
 
-Ansible playbook for running commands on cisco devices using ios module and sends mail notifications if errors are detected during command executions.  
+Ansible playbook for running commands on cisco devices using ios module and sends mail notifications if any abnormalities are detected for the cisco devices.  
 
 Here is an Ansible playbook that uses the cisco.ios.ios_command module to run diagnostic commands on Cisco devices. It registers the output and triggers an email notification via the community.general.mail module if specific abnormalities (like interface errors) are detected.
 
