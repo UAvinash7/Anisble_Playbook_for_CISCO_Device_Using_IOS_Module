@@ -1,0 +1,34 @@
+---
+- name: Monitor Cisco IOS Devices and Alert on Abnormalities
+  hosts: cisco_switches
+  gather_facts: no
+  connection: network_cli
+
+  tasks:
+    - name: Run diagnostic commands
+      cisco.ios.ios_command:
+        commands:
+          - show interfaces | include errors|CRC|drops
+          - show ip interface brief
+      register: diag_output
+
+    - name: Check for abnormalities in output
+      set_fact:
+        abnormalities_found: "{{ 'errors' in diag_output.stdout[0] or 'CRC' in diag_output.stdout[0] }}"
+
+    - name: Send Email Notification if Abnormalities Found
+      community.general.mail:
+        host: smtp.gmail.com  # Use your SMTP server
+        port: 587
+        secure: starttls
+        username: "your_automation_email@gmail.com"
+        password: "your_app_password"
+        to: "network_admin@example.com"
+        subject: "ALERT: Abnormalities detected on {{ inventory_hostname }}"
+        body: |
+          Abnormalities were detected during the scheduled check on {{ inventory_hostname }}.
+          
+          Command Output:
+          {{ diag_output.stdout[0] }}
+        delegate_to: localhost
+      when: abnormalities_found
